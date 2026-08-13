@@ -1,16 +1,19 @@
-// Supplementary task: route-specific middleware that validates the :id
-// param format before the request reaches the controller. Stores the parsed
-// integer on req.taskId so controllers don't have to re-parse it.
-function validateTaskId(req, res, next) {
-  const id = Number(req.params.id);
+const { Types } = require('mongoose');
 
-  if (!Number.isInteger(id) || id <= 0) {
-    const err = new Error(`Invalid task id "${req.params.id}" — must be a positive integer.`);
+// Practical 5: ids are now Mongo ObjectIds (24-char hex strings), not
+// sequential integers, since Task documents live in MongoDB. This
+// middleware rejects malformed ids with a 400 before they ever reach a
+// Mongoose query — without it, an invalid id would surface as a 500
+// CastError instead of a clean 400.
+function validateTaskId(req, res, next) {
+  const { id } = req.params;
+
+  if (!Types.ObjectId.isValid(id)) {
+    const err = new Error(`Invalid task id "${id}" — must be a valid MongoDB ObjectId.`);
     err.status = 400;
     return next(err);
   }
 
-  req.taskId = id;
   next();
 }
 

@@ -1,4 +1,8 @@
+require('dotenv').config();
+
 const express = require('express');
+const mongoose = require('mongoose');
+const connectDB = require('./config/db');
 const tasksRouter = require('./routes/tasks');
 const requestLogger = require('./middleware/logger');
 const notFoundHandler = require('./middleware/notFound');
@@ -15,6 +19,7 @@ app.use(requestLogger);
 app.get('/', (req, res) => {
   res.status(200).json({
     message: 'Task Manager API is running.',
+    db: mongoose.connection.readyState === 1 ? 'connected' : 'not connected',
     endpoints: [
       'GET    /tasks',
       'POST   /tasks',
@@ -43,8 +48,33 @@ app.use(notFoundHandler);
 // ---- global error handler — MUST be registered last ----
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Task Manager API listening on port ${PORT}`);
+// Practical 5: connect to MongoDB before accepting traffic. If the
+// database is unreachable, fail loudly and exit rather than serving an
+// API that will 500 on every /tasks request.
+async function start() {
+  try {
+    await connectDB(process.env.MONGODB_URI);
+  } catch (err) {
+    console.error('Failed to connect to MongoDB:', err.message);
+    process.exit(1);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`Task Manager API listening on port ${PORT}`);
+  });
+}
+
+// Only auto-start when run directly (`node server.js`), not when required
+// by a test file that wants to manage its own connection/lifecycle.
+if (require.main === module) {
+  start();
+}
+
+// Graceful shutdown: close the Mongo connection cleanly on Ctrl+C.
+process.on('SIGINT', async () => {
+  await mongoose.connection.close();
+  console.log('\nMongoDB connection closed. Bye!');
+  process.exit(0);
 });
 
 module.exports = app;
