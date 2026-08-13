@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const tasksRouter = require('./routes/tasks');
@@ -12,6 +13,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ---- global middleware ----
+// Practical 6: the React dev server runs on a different origin
+// (localhost:5173) than this API, so the browser blocks the request
+// unless the server explicitly allows it via CORS.
+app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
 
