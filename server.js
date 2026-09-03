@@ -5,6 +5,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const tasksRouter = require('./routes/tasks');
+const authRouter = require('./routes/auth');
 const requestLogger = require('./middleware/logger');
 const notFoundHandler = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
@@ -26,15 +27,19 @@ app.get('/', (req, res) => {
     message: 'Task Manager API is running.',
     db: mongoose.connection.readyState === 1 ? 'connected' : 'not connected',
     endpoints: [
-      'GET    /tasks',
-      'POST   /tasks',
-      'GET    /tasks/:id',
-      'PUT    /tasks/:id',
-      'DELETE /tasks/:id',
+      'POST   /auth/register',
+      'POST   /auth/login',
+      'GET    /auth/me           (requires Authorization: Bearer <token>)',
+      'GET    /tasks             (requires Authorization: Bearer <token>)',
+      'POST   /tasks             (requires Authorization: Bearer <token>)',
+      'GET    /tasks/:id         (requires Authorization: Bearer <token>)',
+      'PUT    /tasks/:id         (requires Authorization: Bearer <token>)',
+      'DELETE /tasks/:id         (requires Authorization: Bearer <token>)',
     ],
   });
 });
 
+app.use('/auth', authRouter);
 app.use('/tasks', tasksRouter);
 
 // Demo route for the error handler — deliberately throws so you can see the

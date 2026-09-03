@@ -18,6 +18,13 @@ function errorHandler(err, req, res, _next) {
     return res.status(400).json({ error: `Invalid value for "${err.path}": ${err.value}` });
   }
 
+  // Practical 7: Mongoose duplicate-key error — thrown when registering
+  // with an email that's already in the User collection (unique index).
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyPattern || {})[0] || 'field';
+    return res.status(400).json({ error: `That ${field} is already registered.` });
+  }
+
   const status = err.status || 500;
   // Never leak the raw stack trace to the client — log it server-side only,
   // and send back a small, structured, consistent error shape.
