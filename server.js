@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
+const cacheModule = require('./config/cache');
 const tasksRouter = require('./routes/tasks');
 const authRouter = require('./routes/auth');
 const requestLogger = require('./middleware/logger');
@@ -41,6 +42,12 @@ app.get('/', (req, res) => {
 
 app.use('/auth', authRouter);
 app.use('/tasks', tasksRouter);
+
+// Practical 9 (supplementary): cache hit/miss counters for the debug page.
+app.get('/debug/cache-stats', (req, res) => {
+  const { hits, misses } = cacheModule.stats;
+  res.json({ enabled: cacheModule.enabled, hits, misses, total: hits + misses });
+});
 
 // Demo route for the error handler — deliberately throws so you can see the
 // global handler catch it and return a clean 500 instead of crashing.
