@@ -7,7 +7,8 @@ require('dotenv').config();
 
 const BASE = `http://localhost:${process.env.PORT || 5000}`;
 const creds = { name: 'Bench', email: 'bench@example.com', password: 'bench-pass-1' };
-const RUNS = 5;
+const RUNS = Number(process.env.RUNS) || 5;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function call(path, opts = {}) {
   const start = performance.now();
@@ -33,7 +34,10 @@ async function token() {
   console.log(`\nCache enabled on server: ${stats0.enabled}`);
   console.log('GET /tasks response times');
   console.log('-------------------------');
+  // Optional pacing (START_MS / DELAY_MS) so each reading can be screenshotted.
+  await sleep(Number(process.env.START_MS) || 0);
   for (let i = 1; i <= RUNS; i++) {
+    if (i > 1) await sleep(Number(process.env.DELAY_MS) || 0);
     const r = await call('/tasks', { headers: auth });
     console.log(`Request ${i}: ${r.ms.toFixed(2)} ms  (status ${r.status}, ${r.body.length} tasks)`);
   }
