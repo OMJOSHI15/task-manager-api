@@ -1,5 +1,6 @@
 const Task = require('../models/Task');
 const cache = require('../config/cache');
+const taskEvents = require('../events/events');
 
 // Practical 5: this controller now talks to MongoDB through the Task
 // Mongoose model instead of a hand-rolled in-memory array (Practical 4).
@@ -45,7 +46,10 @@ async function createTask(req, res, next) {
     const { title, description, completed } = req.body || {};
     const task = await Task.create({ title, description, completed });
     cache.del(cache.ALL_TASKS); // a new task makes the cached list stale
+    // Practical 10: respond first, then emit; the listener runs in the background.
+    console.log(`[API]          Response sent at ${new Date().toISOString()}`);
     res.status(201).json(task);
+    taskEvents.emit('task-created', task, req.user && req.user.id);
   } catch (err) {
     // Mongoose ValidationError (e.g. missing title) is mapped to 400 in
     // the centralized error handler, so we just hand it off.
@@ -84,6 +88,7 @@ async function deleteTask(req, res, next) {
     }
     cache.del(cache.ALL_TASKS, cache.taskKey(req.params.id));
     res.status(200).json({ message: 'Task deleted', task });
+    taskEvents.emit('task-deleted', task, req.user && req.user.id);
   } catch (err) {
     next(err);
   }

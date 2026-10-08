@@ -8,7 +8,8 @@
     "dev": "node --watch server.js",
     "seed": "node scripts/seed.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bench": "node scripts/bench-cache.js"
+    "bench": "node scripts/bench-cache.js",
+    "demo:events": "node scripts/demo-events.js"
   },
   "keywords": [],
   "author": "",

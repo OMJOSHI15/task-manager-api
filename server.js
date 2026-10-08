@@ -5,6 +5,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const cacheModule = require('./config/cache');
+require('./events/listeners'); // Practical 10: register listeners before any emit
 const tasksRouter = require('./routes/tasks');
 const authRouter = require('./routes/auth');
 const requestLogger = require('./middleware/logger');
