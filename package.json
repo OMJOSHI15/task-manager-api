@@ -1,13 +1,13 @@
 {
   "name": "task-manager-api",
   "version": "1.0.0",
-  "description": "RESTful Task Manager API built with Express and MongoDB/Mongoose (AWDF Practicals 4-5) \u2014 CRUD routes, schema-validated Mongoose models, request logging, and centralized error handling middleware.",
+  "description": "RESTful Task Manager API built with Express and MongoDB/Mongoose (AWDF Practicals 4-5) — CRUD routes, schema-validated Mongoose models, request logging, and centralized error handling middleware.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
     "seed": "node scripts/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --forceExit",
     "bench": "node scripts/bench-cache.js",
     "demo:events": "node scripts/demo-events.js"
   },
@@ -23,5 +23,9 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.2",
     "node-cache": "^5.1.2"
+  },
+  "devDependencies": {
+    "jest": "^30.5.2",
+    "supertest": "^7.3.1"
   }
 }

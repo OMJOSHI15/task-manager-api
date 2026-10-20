@@ -1,5 +1,7 @@
 # Task Manager API
 
+![CI](https://github.com/OMJOSHI15/task-manager-api/actions/workflows/ci.yml/badge.svg)
+
 A RESTful backend for a task management system, built with Node.js and
 Express as part of AWDF **Practical 4**, then upgraded to store data in
 **MongoDB via Mongoose** for **Practical 5** (schema design, validation,
